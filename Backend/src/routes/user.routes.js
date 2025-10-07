@@ -12,3 +12,17 @@ router.post('/register',[
 ],
     userController.registerUser
 )
+
+router.post('/login',[
+    body('email').isEmail().withMessage('Inavalid Email'),
+    body('password').length({min:6}).withMessage('Password must must be at least 6 character long')
+
+],
+    userController.loginUser
+)
+
+router.get('/profile',authMiddleware.authUser ,userController.getUserProfile)
+router.get('/logout',authMiddleware.authUser,userController.logoutUser)
+
+
+export default router;
