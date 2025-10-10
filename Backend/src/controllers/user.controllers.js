@@ -48,7 +48,7 @@ export const loginUser = async(req,res,next)=>{
     const user = await userModel.findOne({email}).select('password');
 
     if(!user){
-        return res.status(401).json({message:'Inavlid eamil or passwprd'});
+        return res.status(401).json({message:'Inavlid eamil or password'});
 
     }
 
