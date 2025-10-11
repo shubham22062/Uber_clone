@@ -55,6 +55,6 @@ const rideSchema = new mongoose.Schema({
 },{timestamps:true})
 
 
-const Ride = mongoose.model('Ride',rideSchema)
+const rideModel = mongoose.model('rideModel',rideSchema)
 
-export default Ride;
+export default rideModel;
