@@ -1,0 +1,64 @@
+import {Server} from 'socket.io';
+import userModel from './src/models/user.model.js';
+import captainModel from './src/models/captain.model.js';
+
+let io;
+
+export function initializeSocket(server) {
+    io = new server(server,{
+        cors:{
+            origin:'*',
+            method:['GET', 'POST'],
+        },
+    })
+
+
+    io.on('connection',(socket)=>{
+        console.log(`client connected:${socket.id}`);
+
+
+        socket.on('join', async (data)=>{
+            const {userId,userType} = data;
+
+            if(userType === 'user'){
+                await userModel.findByIdAndUpdate(userId,{socketId:socket.id});
+
+            }else if(userType === 'captain'){
+                await captainModel.findByIdAndUpdate(userId,{socketId:socket.id});
+
+            }
+        });
+
+
+        socket.on('update-location-captain',async(data)=>{
+            const {userId, location} = data;
+
+            if(!location || !location.ltd||!location.lng){
+                return socket.emit('error',{message :"Invalid location data"});
+            }
+
+            await captainModel.findByIdAndUpdate(userId,{
+                location:{
+                    ltd:location.ltd,
+                    lng:location.lng,
+                },
+            });
+        });
+
+        
+        socket.on('disconnect',()=>{
+            console.log(`Client disconnected :${socket.id}`);
+        });
+    });
+}
+
+
+export function sendMessageToSocketId(socketId, messageObject.data){
+    console.log(messageObject);
+
+    if(io){
+        io.to(socketId).emit(messageObject.event, messageObject.data);
+    }else{
+        console.log('Socket.io not initialized.');
+    }
+}
